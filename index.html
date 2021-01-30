@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecasting</title>
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div class="flip-card" onclick=flip()>
+        <div class="flip-card-inner">
+            <div class="flip-card-front">
+                <h2 class="heading">Click here to Check Weather</h1>
+            </div>
+            <div class="flip-card-back">
+                <section class="top-banner">
+                    <h1 class="heading">Weather Forecasting</h1>
+                    <form>
+                        <input type="text" placeholder="Enter City Name" autofocus>
+                        <button type="submit" class="submit">SUBMIT</button>
+                        <div><span class="msg"></span></div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+       
+    <section class="ajax-section">
+        <div class="container">
+            <ul class="cities"></ul>
+        </div>
+    </section>
+
+    <script>
+        const form = document.querySelector(".top-banner form");
+        const input = document.querySelector(".top-banner input");
+        const msg = document.querySelector(".top-banner .msg");
+        const list = document.querySelector(".ajax-section .cities");
+
+        const apiKey = "11aaee813ee87d38da97ad06f46579cc";
+
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            let inputVal = input.value;
+
+            //ajax here
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${inputVal}&appid=${apiKey}&units=metric`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const {
+                        main,
+                        temp,
+                        sys,
+                        weather
+                    } = data;
+                    const icon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${
+                        weather[0]["icon"]
+                    }.svg`;
+
+                    const li = document.createElement("li");
+                    li.classList.add("city");
+                    const markup = `
+                        <h2 class="city-name" data-name="${name},${sys.country}">
+                        <span>${name}</span>
+                        <sup>${sys.country}</sup>
+                        </h2>
+                        <div class="city-temp">${Math.round(main.temp)}<sup>°C</sup></div>
+                        <figure>
+                        <img class="city-icon" src="${icon}" alt="${
+                        weather[0]["description"]
+                    }">
+                        <figcaption>${weather[0]["description"]}</figcaption>
+                        </figure>
+                    `;
+                    li.innerHTML = markup;
+                    list.appendChild(li);
+                })
+                .catch(() => {
+                    msg.textContent = "Enter the valid city name";
+                });
+
+            msg.textContent = "";
+            form.reset();
+            input.focus();
+        });
+
+        // val = 0;
+        function flip()
+        {
+            document.getElementsByClassName('flip-card-inner')[0].style.transform = 'rotateY(180deg)';
+        }
+    </script>
+</body>
+</html>
+   
+
